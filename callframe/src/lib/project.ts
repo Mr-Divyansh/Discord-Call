@@ -1,19 +1,19 @@
-import type { Project, ParticipantId, CallEffect, ExportSettings } from '../types';
+import type { Project, ParticipantId, Participant, CallEffect, ExportSettings, MediaFile } from '../types';
 
 export const PROJECT_VERSION = 1;
 
 export const DEFAULT_EXPORT_SETTINGS: ExportSettings = {
-  width: 1280,
-  height: 720,
-  fps: 30,
-  crf: 23,
+  width: 1920,
+  height: 1080,
+  fps: 60,
+  crf: 18,
   audioBitrate: '192k',
 };
 
 export function emptyParticipant(id: ParticipantId): Participant {
   return {
     id,
-    displayName: id === 'a' ? 'Divyansh' : 'Abhay',
+    displayName: id === 'a' ? 'D Web Studio' : 'Abhay',
     avatar: null,
     audio: null,
     volume: 1.0,
@@ -108,7 +108,7 @@ export function deserializeProject(json: string): Project {
   if (Array.isArray(raw.effects)) {
     project.effects = raw.effects.map((e: Partial<CallEffect> & { id?: string }) => ({
       id: e.id || crypto.randomUUID(),
-      type: e.type,
+      type: (e.type ?? 'outgoing-ring') as CallEffect['type'],
       file: e.file ?? null,
       startTime: typeof e.startTime === 'number' ? e.startTime : 0,
       volume: typeof e.volume === 'number' ? e.volume : 1,

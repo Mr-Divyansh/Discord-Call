@@ -4,7 +4,7 @@ import type { SpeakingInterval } from '../types';
  * Decode an ArrayBuffer into an AudioBuffer using the AudioContext.
  */
 export function decodeAudio(arrayBuffer: ArrayBuffer): Promise<AudioBuffer> {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
   const ctx = new AudioContext();
   return ctx.decodeAudioData(arrayBuffer).finally(() => {
     if (ctx.state !== 'closed') ctx.close();

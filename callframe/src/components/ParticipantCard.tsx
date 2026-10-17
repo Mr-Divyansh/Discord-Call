@@ -1,8 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import type { Project, ParticipantId, Participant, MediaFile } from '../types';
-import { mediaFileFromFile } from '../lib/project';
-import { decodeAudio, analyzeSpeaking } from '../lib/audio';
-import { Upload, Play, Speaker, Trash2, RefreshCw } from 'lucide-react';
+import { useState, useRef } from 'react';
+import type { ParticipantId, Participant } from '../types';
+import { Upload, Play } from 'lucide-react';
 
 interface ParticipantCardProps {
   id: ParticipantId;
@@ -16,7 +14,7 @@ interface ParticipantCardProps {
 }
 
 export function ParticipantCard({ id, participant, media, images, onChange, onSetAvatar, onSetAudio, onPreviewAsset }: ParticipantCardProps) {
-  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzing] = useState(false);
   const audioInput = useRef<HTMLInputElement>(null);
   const avatarInput = useRef<HTMLInputElement>(null);
 
@@ -42,7 +40,6 @@ export function ParticipantCard({ id, participant, media, images, onChange, onSe
     if (file && accept.some((a) => file.type.startsWith(a.split('/')[0]) || file.name.match(new RegExp(a.split('.')[1] ?? '')))) onFile(file);
   };
 
-  const img = participant.avatar ? images.get(participant.avatar.id) : undefined;
   const meta = media.get(participant.audio?.id ?? '');
   const duration = meta?.buffer.duration ?? participant.audio?.duration ?? 0;
 

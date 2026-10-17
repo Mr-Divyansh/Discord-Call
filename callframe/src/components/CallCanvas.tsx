@@ -1,4 +1,4 @@
-import type { Project, CallStateInfo, MediaFile } from '../types';
+import type { Project, CallStateInfo } from '../types';
 
 interface CallCanvasProps {
   project: Project;
@@ -61,7 +61,7 @@ export function CallCanvas({ project, images, speakingA, speakingB, callState, t
             step="0.1"
             value={time}
             onChange={(e) => onSeekScrub(parseFloat(e.target.value))}
-            onMouseUp={(e) => onSeek(parseFloat(e.target.value))}
+            onMouseUp={(e) => onSeek(parseFloat((e.target as HTMLInputElement).value))}
             onTouchEnd={(e) => onSeek(parseFloat((e.target as HTMLInputElement).value))}
             aria-label="Seek"
           />

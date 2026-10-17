@@ -1,5 +1,4 @@
 import type { Project } from '../types';
-import type { SpeakingInterval } from '../types';
 
 /**
  * Client-side preview engine.
@@ -22,7 +21,7 @@ export class PreviewEngine {
 
   async ensureContext() {
     if (!this.ctx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       this.ctx = new AudioContext();
     }
     if (this.ctx.state === 'suspended') await this.ctx.resume();
@@ -88,8 +87,8 @@ export class PreviewEngine {
     // Participant tracks (offsets applied inside the timeline)
     const aVol = project.participants.a.volume;
     const bVol = project.participants.b.volume;
-    schedule(this.buffers.get(project.participants.a.audio?.id ?? ''), base + ev.conversationStart + project.participants.a.offset, 0, aVol);
-    schedule(this.buffers.get(project.participants.b.audio?.id ?? ''), base + ev.conversationStart + project.participants.b.offset, 0, bVol);
+    schedule(this.buffers.get(project.participants.a.audio?.id ?? '') ?? null, base + ev.conversationStart + project.participants.a.offset, 0, aVol);
+    schedule(this.buffers.get(project.participants.b.audio?.id ?? '') ?? null, base + ev.conversationStart + project.participants.b.offset, 0, bVol);
     // Call-ended sound
     const ended = project.effects.find(e => e.type === 'ended');
     schedule(ended?.file ? this.buffers.get(ended.file.id) ?? null : null, base + ev.endedStart, 0, ended?.volume ?? 1);
@@ -108,7 +107,7 @@ export class PreviewEngine {
   ) {
     if (!this.ctx) return;
     this.stopAll();
-    this.onTime = undefined;
+    this.onTime = null;
     const ev = timelineEventsLocal(project);
     const base = this.ctx.currentTime + 0.05;
     const gain = this.ctx.createGain();
@@ -116,9 +115,9 @@ export class PreviewEngine {
 
     const scheduleIf = (buffer: AudioBuffer | null, eventStart: number, volume = 1) => {
       if (!buffer || t < eventStart) return;
-      const src = this.ctx.createBufferSource();
+      const src = this.ctx!.createBufferSource();
       src.buffer = buffer;
-      const g = this.ctx.createGain();
+      const g = this.ctx!.createGain();
       g.gain.value = volume;
       src.connect(g).connect(gain);
       src.start(base, t - eventStart);

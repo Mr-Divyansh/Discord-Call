@@ -1,4 +1,5 @@
-import { createFFmpegCore } from '@ffmpeg/core';
+/// <reference lib="webworker" />
+import createFFmpegCore from '@ffmpeg/core';
 
 type WorkerMessage =
   | { type: 'LOAD' }
@@ -7,14 +8,6 @@ type WorkerMessage =
   | { type: 'EXEC'; args: string[] }
   | { type: 'TERMINATE' };
 
-type WorkerReply =
-  | { type: 'LOADED' }
-  | { type: 'OK' }
-  | { type: 'FILE_DATA'; path: string; data: Uint8Array }
-  | { type: 'EXEC_OK'; data: number }
-  | { type: 'LOG'; data: any }
-  | { type: 'PROGRESS'; data: any }
-  | { type: 'ERROR'; data: string };
 
 let ffmpeg: any = null;
 

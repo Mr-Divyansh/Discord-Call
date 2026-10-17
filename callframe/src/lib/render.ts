@@ -1,4 +1,4 @@
-import type { Project, MediaFile, ExportSettings } from '../types';
+import type { Project, MediaFile } from '../types';
 import { timelineEvents } from './project';
 
 /** Convert a data URL to a Uint8Array. */
@@ -185,6 +185,9 @@ export function buildRenderArgs(
     '-c:a', 'aac', '-b:a', audioBitrate, '-movflags', '+faststart', '-t', String(duration),
     `${tmpDir}/output.mp4`
   );
+  return args;
+}
+
 /**
  * Render controller. Runs ffmpeg.wasm in a dedicated worker so the UI stays
  * responsive and cancellation can terminate the worker cleanly.
@@ -198,12 +201,12 @@ export class RenderController {
   async startRender(
     project: Project,
     inputs: RenderInputs,
-    onEvent: (e: { type: 'log' | 'progress' | 'done' | 'error'; payload: any }) => void
+    onEvent: (e: { type: string; payload: any }) => void
   ): Promise<void> {
     if (this.worker) throw new Error('A render is already in progress');
 
     this.controller = new AbortController();
-    this.worker = new Worker(new URL('../../ffmpeg-worker.ts', import.meta.url), { type: 'module' });
+    this.worker = new Worker(new URL('../ffmpeg-worker.ts', import.meta.url), { type: 'module' });
 
     const handler = (e: MessageEvent) => {
       const msg = e.data as { type: string; [k: string]: any };
@@ -290,9 +293,6 @@ export class RenderController {
   }
 }
 
-  return args;
-}
-
 function speakingIntervalTimes(
   participant: { offset: number; audio: MediaFile & { speakingIntervals?: { start: number; end: number }[] } | null },
   ev: ReturnType<typeof timelineEvents>
@@ -310,7 +310,7 @@ function drawTextArg(from: string, to: string, text: string, x: number, y: numbe
 }
 
 
-interface RenderInputs {
+export interface RenderInputs {
   aIdle: MediaFile;
   aSpeaking: MediaFile; // generated circle PNG
   bIdle: MediaFile;

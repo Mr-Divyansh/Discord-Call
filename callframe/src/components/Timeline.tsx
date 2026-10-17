@@ -48,7 +48,7 @@ export function Timeline({ project, intervals, time, duration, onSeek }: Timelin
     return (
       <div key={`ef-${i}`} className="tl-segment effect" style={{ left: px(ef.startTime), width: px(dur) }} title={`${ef.type} at ${ef.startTime}s`} />
     );
-  });
+  }).filter(Boolean) as JSX.Element[];
 
   return (
     <div className="timeline" onClick={handleClick}>
